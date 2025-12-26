@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Sidebar Categories
         \Illuminate\Support\Facades\View::composer(['detail', 'faqs', 'category'], function ($view) {
             $view->with('sidebarCategories', \App\Models\Category::withCount('games')->orderBy('games_count', 'desc')->get());
