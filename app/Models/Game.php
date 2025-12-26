@@ -11,12 +11,13 @@ class Game extends Model
         'author', 'developer', 'version', 'censorship', 'language',
         'platform', 'release_date', 'download_link', 'buy_link',
         'system_requirements', 'gallery_images', 'download_content', 'password', 'installation_guide',
-        'meta_title', 'meta_description', 'meta_keywords'
+        'meta_title', 'meta_description', 'meta_keywords', 'is_hot'
     ];
 
     protected $casts = [
         'release_date' => 'date',
         'gallery_images' => 'array',
+        'is_hot' => 'boolean',
     ];
 
     public function categories()
