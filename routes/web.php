@@ -68,3 +68,12 @@ Route::get('/category/{slug}', function ($slug) {
     $games = $category->games()->with('categories')->latest()->paginate(12);
     return view('category', compact('category', 'games'));
 })->name('category');
+
+Route::get('/monitor/database-keep-alive', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json(['status' => 'ok', 'message' => 'Database connection is active.']);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()], 500);
+    }
+});

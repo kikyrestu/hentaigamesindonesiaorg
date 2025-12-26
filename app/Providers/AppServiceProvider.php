@@ -3,6 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use ImageKit\ImageKit;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Filesystem\FilesystemAdapter;
+use League\Flysystem\Filesystem;
+use App\Extensions\ImageKitAdapter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +27,22 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        Storage::extend('imagekit', function ($app, $config) {
+            $client = new ImageKit(
+                $config['public_key'],
+                $config['private_key'],
+                $config['url_endpoint']
+            );
+
+            $adapter = new ImageKitAdapter($client);
+
+            return new FilesystemAdapter(
+                new Filesystem($adapter, $config),
+                $adapter,
+                $config
+            );
+        });
 
         // Sidebar Categories
         \Illuminate\Support\Facades\View::composer(['detail', 'faqs', 'category'], function ($view) {
