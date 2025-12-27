@@ -170,8 +170,12 @@ class ImageKitAdapter implements FilesystemAdapter
     {
         $details = $this->getFileDetails($path);
         
-        $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
-        $mimeType = $detector->detectMimeTypeFromPath($path, null);
+        $mimeType = $details->mime ?? null;
+
+        if (!$mimeType) {
+            $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
+            $mimeType = $detector->detectMimeTypeFromPath($path, null);
+        }
 
         return new FileAttributes(
             $path, 
