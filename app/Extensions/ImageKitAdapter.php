@@ -93,6 +93,14 @@ class ImageKitAdapter implements FilesystemAdapter
         if ($response->error) {
             throw UnableToWriteFile::atLocation($path, $response->error->message);
         }
+
+        // CACHE THE RESULT to handle eventual consistency
+        if ($response->result) {
+            $cacheKey = 'imagekit_file_' . md5($path);
+            // Cache for 10 minutes
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $response->result, 600);
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Cached file details for path: $path");
+        }
     }
 
     public function read(string $path): string
@@ -127,6 +135,9 @@ class ImageKitAdapter implements FilesystemAdapter
             if ($response->error) {
                 throw UnableToDeleteFile::atLocation($path, $response->error->message);
             }
+            // Clear Cache
+            $cacheKey = 'imagekit_file_' . md5($path);
+            \Illuminate\Support\Facades\Cache::forget($cacheKey);
         }
     }
 
@@ -269,6 +280,16 @@ class ImageKitAdapter implements FilesystemAdapter
 
     protected function getFileId(string $path): ?string
     {
+        // Check Cache First
+        $cacheKey = 'imagekit_file_' . md5($path);
+        $cachedDetails = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        if ($cachedDetails && isset($cachedDetails->fileId)) {
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Cache HIT for getFileId: $path");
+            return $cachedDetails->fileId;
+        }
+
+        \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Cache MISS for getFileId: $path. Querying API...");
+
         $dirname = dirname($path);
         $filename = basename($path);
         
@@ -288,6 +309,8 @@ class ImageKitAdapter implements FilesystemAdapter
 
         foreach ($response->result as $file) {
             if ($file->name === $filename) {
+                // Cache it for future use
+                \Illuminate\Support\Facades\Cache::put($cacheKey, $file, 600);
                 return $file->fileId;
             }
         }
@@ -297,6 +320,14 @@ class ImageKitAdapter implements FilesystemAdapter
     
     protected function getFileDetails(string $path)
     {
+        // Check Cache First
+        $cacheKey = 'imagekit_file_' . md5($path);
+        $cachedDetails = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        if ($cachedDetails) {
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Cache HIT for getFileDetails: $path");
+            return $cachedDetails;
+        }
+
         $fileId = $this->getFileId($path);
         if (!$fileId) {
              throw UnableToRetrieveMetadata::create($path, 'File not found');
@@ -307,6 +338,9 @@ class ImageKitAdapter implements FilesystemAdapter
              throw UnableToRetrieveMetadata::create($path, $response->error->message);
         }
         
+        // Cache it
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $response->result, 600);
+
         return $response->result;
     }
     
