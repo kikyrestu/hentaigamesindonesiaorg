@@ -17,18 +17,18 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('title', $siteSettings['site_meta_title'] ?? 'Kimochi Gaming')">
     <meta property="og:description" content="@yield('meta_description', $siteSettings['site_meta_description'] ?? '')">
-    <meta property="og:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? asset('storage/' . $siteSettings['site_logo']) : '')">
+    <meta property="og:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) : '')">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="@yield('title', $siteSettings['site_meta_title'] ?? 'Kimochi Gaming')">
     <meta property="twitter:description" content="@yield('meta_description', $siteSettings['site_meta_description'] ?? '')">
-    <meta property="twitter:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? asset('storage/' . $siteSettings['site_logo']) : '')">
+    <meta property="twitter:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) : '')">
 
     @if(!empty($siteSettings['site_favicon']))
-        <link rel="icon" href="{{ asset('storage/' . $siteSettings['site_favicon']) }}" type="image/x-icon">
-        <link rel="shortcut icon" href="{{ asset('storage/' . $siteSettings['site_favicon']) }}" type="image/x-icon">
+        <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_favicon']) }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_favicon']) }}" type="image/x-icon">
     @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
