@@ -8,14 +8,26 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 
 Route::get('/debug-logs', function () {
     $logFile = storage_path('logs/laravel.log');
+    
+    // Test URL Generation
+    $testUrl = \Illuminate\Support\Facades\Storage::disk('imagekit')->url('test-image.jpg');
+    $configUrl = config('filesystems.disks.imagekit.url');
+    $envUrl = env('IMAGEKIT_URL_ENDPOINT');
+    
+    $debugInfo = "<h3>Debug Info</h3>";
+    $debugInfo .= "Generated URL: " . $testUrl . "<br>";
+    $debugInfo .= "Config URL: " . $configUrl . "<br>";
+    $debugInfo .= "Env URL: " . $envUrl . "<br>";
+    $debugInfo .= "<hr>";
+
     if (!file_exists($logFile)) {
-        return 'No log file found at ' . $logFile;
+        return $debugInfo . 'No log file found at ' . $logFile;
     }
     $content = file_get_contents($logFile);
     // Get last 200 lines
     $lines = explode("\n", $content);
     $lastLines = array_slice($lines, -200);
-    return '<pre>' . implode("\n", $lastLines) . '</pre>';
+    return $debugInfo . '<pre>' . implode("\n", $lastLines) . '</pre>';
 });
 
 Route::get('/', function () {
