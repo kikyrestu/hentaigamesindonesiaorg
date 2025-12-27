@@ -49,7 +49,7 @@
 
                 <!-- Thumbnail -->
                 <div class="flex justify-center mb-8">
-                    <img src="{{ $game->cover_image ? \Illuminate\Support\Facades\Storage::url($game->cover_image) : ($game->thumbnail_image ? \Illuminate\Support\Facades\Storage::url($game->thumbnail_image) : 'https://placehold.co/300x100/333/666?text=' . urlencode($game->title)) }}" alt="Thumbnail" class="rounded shadow-lg max-h-[400px] object-contain">
+                    <img src="{{ $game->thumbnail_image ? \Illuminate\Support\Facades\Storage::url($game->thumbnail_image) : ($game->cover_image ? \Illuminate\Support\Facades\Storage::url($game->cover_image) : 'https://placehold.co/300x100/333/666?text=' . urlencode($game->title)) }}" alt="Thumbnail" class="rounded shadow-lg max-h-[400px] object-contain">
                 </div>
 
                 <!-- Tabs Navigation -->
