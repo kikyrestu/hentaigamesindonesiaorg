@@ -228,13 +228,13 @@ class ImageKitAdapter implements FilesystemAdapter
     public function lastModified(string $path): FileAttributes
     {
         $details = $this->getFileDetails($path);
-        return new FileAttributes($path, null, null, strtotime($details->updatedAt));
+        return new FileAttributes($path, null, null, strtotime($details->updatedAt ?? 'now'));
     }
 
     public function fileSize(string $path): FileAttributes
     {
         $details = $this->getFileDetails($path);
-        return new FileAttributes($path, $details->size);
+        return new FileAttributes($path, $details->size ?? 0);
     }
 
     public function listContents(string $path, bool $deep): iterable
@@ -259,9 +259,9 @@ class ImageKitAdapter implements FilesystemAdapter
             
             yield new FileAttributes(
                 $item->filePath,
-                $item->size,
+                $item->size ?? 0,
                 null,
-                strtotime($item->updatedAt)
+                strtotime($item->updatedAt ?? 'now')
             );
         }
     }
