@@ -30,6 +30,11 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Storage::extend('imagekit', function ($app, $config) {
+            // Ensure 'url' is set for FilesystemAdapter to generate public URLs correctly
+            if (empty($config['url']) && !empty($config['url_endpoint'])) {
+                $config['url'] = $config['url_endpoint'];
+            }
+
             $client = new ImageKit(
                 $config['public_key'],
                 $config['private_key'],
