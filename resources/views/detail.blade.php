@@ -33,7 +33,7 @@
                 <!-- Top Tags -->
                 <div class="flex flex-wrap gap-1 mb-4">
                     @foreach($game->categories as $category)
-                        <span class="tag-pill">{{ $category->name }}</span>
+                        <a href="{{ route('category', $category->slug) }}" class="tag-pill hover:bg-blue-600 transition-colors">{{ $category->name }}</a>
                     @endforeach
                 </div>
 
