@@ -6,32 +6,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
-Route::get('/debug-logs', function () {
-    $logFile = storage_path('logs/laravel.log');
-    
-    // Test URL Generation
-    $testUrl = \Illuminate\Support\Facades\Storage::disk('imagekit')->url('test-image.jpg');
-    $configUrl = config('filesystems.disks.imagekit.url');
-    $envUrl = env('IMAGEKIT_URL_ENDPOINT');
-    $adapterClass = get_class(\Illuminate\Support\Facades\Storage::disk('imagekit')->getAdapter());
-    
-    $debugInfo = "<h3>Debug Info</h3>";
-    $debugInfo .= "Generated URL: " . $testUrl . "<br>";
-    $debugInfo .= "Config URL: " . $configUrl . "<br>";
-    $debugInfo .= "Env URL: " . $envUrl . "<br>";
-    $debugInfo .= "Adapter: " . $adapterClass . "<br>";
-    $debugInfo .= "<hr>";
-
-    if (!file_exists($logFile)) {
-        return $debugInfo . 'No log file found at ' . $logFile;
-    }
-    $content = file_get_contents($logFile);
-    // Get last 200 lines
-    $lines = explode("\n", $content);
-    $lastLines = array_slice($lines, -200);
-    return $debugInfo . '<pre>' . implode("\n", $lastLines) . '</pre>';
-});
-
 Route::get('/', function () {
     $games = Game::with('categories')->latest()->paginate(12);
     return view('home', compact('games'));

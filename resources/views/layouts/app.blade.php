@@ -17,18 +17,18 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('title', $siteSettings['site_meta_title'] ?? 'Kimochi Gaming')">
     <meta property="og:description" content="@yield('meta_description', $siteSettings['site_meta_description'] ?? '')">
-    <meta property="og:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) : '')">
+    <meta property="og:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::url($siteSettings['site_logo']) : '')">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="@yield('title', $siteSettings['site_meta_title'] ?? 'Kimochi Gaming')">
     <meta property="twitter:description" content="@yield('meta_description', $siteSettings['site_meta_description'] ?? '')">
-    <meta property="twitter:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) : '')">
+    <meta property="twitter:image" content="@yield('og_image', !empty($siteSettings['site_logo']) ? \Illuminate\Support\Facades\Storage::url($siteSettings['site_logo']) : '')">
 
     @if(!empty($siteSettings['site_favicon']))
-        <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_favicon']) }}" type="image/x-icon">
-        <link rel="shortcut icon" href="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_favicon']) }}" type="image/x-icon">
+        <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::url($siteSettings['site_favicon']) }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ \Illuminate\Support\Facades\Storage::url($siteSettings['site_favicon']) }}" type="image/x-icon">
     @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -120,7 +120,7 @@
         <div class="mb-6 flex items-center gap-2">
             @if(!empty($siteSettings['site_logo']))
                 <a href="{{ route('home') }}">
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'Kimochi Gaming' }}" class="h-16 object-contain">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'Kimochi Gaming' }}" class="h-16 object-contain">
                 </a>
             @else
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
@@ -183,7 +183,7 @@
                 <div class="space-y-4">
                     @forelse($hotGames as $hotGame)
                     <div class="flex gap-3">
-                        <img src="{{ $hotGame->cover_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($hotGame->cover_image) : 'https://placehold.co/80x50/333/666?text=' . urlencode($hotGame->title) }}" class="rounded object-cover w-20 h-12">
+                        <img src="{{ $hotGame->cover_image ? \Illuminate\Support\Facades\Storage::url($hotGame->cover_image) : 'https://placehold.co/80x50/333/666?text=' . urlencode($hotGame->title) }}" class="rounded object-cover w-20 h-12">
                         <div>
                             <a href="{{ route('detail', $hotGame->slug) }}" class="text-sm text-gray-300 hover:text-white font-medium line-clamp-2">{{ $hotGame->title }}</a>
                         </div>
@@ -199,7 +199,7 @@
         <div class="mt-12 text-center border-t border-gray-900 pt-8">
             <div class="mb-2 flex justify-center items-center gap-2">
                 @if(!empty($siteSettings['site_logo']))
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'Kimochi Gaming' }}" class="h-12 object-contain opacity-80">
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'Kimochi Gaming' }}" class="h-12 object-contain opacity-80">
                 @else
                     <i class="fa-solid fa-cat text-2xl text-gray-500"></i>
                     <h2 class="text-2xl logo-text">

@@ -139,8 +139,7 @@ class GameResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('thumbnail_image')
-                    ->disk('imagekit'),
+                Tables\Columns\ImageColumn::make('thumbnail_image'),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('author')
