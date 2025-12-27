@@ -14,7 +14,7 @@
             <!-- Card -->
             <div class="relative group overflow-hidden rounded-lg aspect-video cursor-pointer">
                 <a href="{{ route('detail', $game->slug) }}">
-                    <img src="{{ $game->cover_image ? asset('storage/' . $game->cover_image) : 'https://placehold.co/600x400/333/666?text=' . urlencode($game->title) }}" alt="{{ $game->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                    <img src="{{ $game->cover_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($game->cover_image) : 'https://placehold.co/600x400/333/666?text=' . urlencode($game->title) }}" alt="{{ $game->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                     <div class="absolute inset-0 card-overlay flex flex-col justify-between p-4">
                         <!-- Tags -->
                         <div class="flex flex-wrap gap-1 content-start">

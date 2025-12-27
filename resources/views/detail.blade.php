@@ -3,7 +3,7 @@
 @section('title', $game->meta_title ?? $game->title . ' - Kimochi Gaming')
 @section('meta_description', $game->meta_description ?? Str::limit(strip_tags($game->description), 160))
 @section('meta_keywords', $game->meta_keywords ?? '')
-@section('og_image', $game->cover_image ? asset('storage/' . $game->cover_image) : '')
+@section('og_image', $game->cover_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($game->cover_image) : '')
 
 @section('content')
     <div class="container mx-auto px-4 flex flex-col lg:flex-row gap-8">
@@ -49,7 +49,7 @@
 
                 <!-- Thumbnail -->
                 <div class="flex justify-center mb-8">
-                    <img src="{{ $game->thumbnail_image ? asset('storage/' . $game->thumbnail_image) : ($game->cover_image ? asset('storage/' . $game->cover_image) : 'https://placehold.co/300x100/333/666?text=' . urlencode($game->title)) }}" alt="Thumbnail" class="rounded shadow-lg max-h-[400px] object-contain">
+                    <img src="{{ $game->thumbnail_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($game->thumbnail_image) : ($game->cover_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($game->cover_image) : 'https://placehold.co/300x100/333/666?text=' . urlencode($game->title)) }}" alt="Thumbnail" class="rounded shadow-lg max-h-[400px] object-contain">
                 </div>
 
                 <!-- Tabs Navigation -->
@@ -94,8 +94,8 @@
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                             @if($game->gallery_images)
                                 @foreach($game->gallery_images as $image)
-                                    <a href="{{ asset('storage/' . $image) }}" target="_blank" class="block rounded-lg overflow-hidden border border-gray-700 hover:border-blue-500 transition group">
-                                        <img src="{{ asset('storage/' . $image) }}" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($image) }}" target="_blank" class="block rounded-lg overflow-hidden border border-gray-700 hover:border-blue-500 transition group">
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::disk('imagekit')->url($image) }}" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300">
                                     </a>
                                 @endforeach
                             @else
@@ -224,7 +224,7 @@
                     <!-- Card -->
                     <div class="relative group overflow-hidden rounded-lg aspect-video cursor-pointer">
                         <a href="{{ route('detail', $related->slug) }}">
-                            <img src="{{ $related->cover_image ? asset('storage/' . $related->cover_image) : 'https://placehold.co/600x400/333/666?text=' . urlencode($related->title) }}" alt="{{ $related->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            <img src="{{ $related->cover_image ? \Illuminate\Support\Facades\Storage::disk('imagekit')->url($related->cover_image) : 'https://placehold.co/600x400/333/666?text=' . urlencode($related->title) }}" alt="{{ $related->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                             <div class="absolute inset-0 card-overlay flex flex-col justify-between p-4">
                                 <div class="flex flex-wrap gap-1 content-start">
                                     @foreach($related->categories as $cat)
