@@ -24,7 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('production')) {
+        // Only force HTTPS if we are NOT using an IP address (basic check)
+        if ($this->app->environment('production') && !preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/', request()->getHost())) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
