@@ -13,11 +13,13 @@ Route::get('/debug-logs', function () {
     $testUrl = \Illuminate\Support\Facades\Storage::disk('imagekit')->url('test-image.jpg');
     $configUrl = config('filesystems.disks.imagekit.url');
     $envUrl = env('IMAGEKIT_URL_ENDPOINT');
+    $adapterClass = get_class(\Illuminate\Support\Facades\Storage::disk('imagekit')->getAdapter());
     
     $debugInfo = "<h3>Debug Info</h3>";
     $debugInfo .= "Generated URL: " . $testUrl . "<br>";
     $debugInfo .= "Config URL: " . $configUrl . "<br>";
     $debugInfo .= "Env URL: " . $envUrl . "<br>";
+    $debugInfo .= "Adapter: " . $adapterClass . "<br>";
     $debugInfo .= "<hr>";
 
     if (!file_exists($logFile)) {
