@@ -4,6 +4,17 @@ use App\Models\Game;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/debug-logs', function () {
+    $logFile = storage_path('logs/laravel.log');
+    if (!file_exists($logFile)) {
+        return 'No log file found at ' . $logFile;
+    }
+    $content = file_get_contents($logFile);
+    $lines = explode("\n", $content);
+    $lastLines = array_slice($lines, -200);
+    return '<pre>' . implode("\n", $lastLines) . '</pre>';
+});
+
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/', function () {
