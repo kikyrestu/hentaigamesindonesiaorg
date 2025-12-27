@@ -1,0 +1,70 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        image: hentaigames-app
+        container_name: hentaigames_app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - hentaigames_network
+        depends_on:
+            - db
+
+    web:
+        image: nginx:alpine
+        container_name: hentaigames_nginx
+        restart: unless-stopped
+        ports:
+            - "8001:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        networks:
+            - hentaigames_network
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        container_name: hentaigames_db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - hentaigames_network
+        ports:
+            - "3307:3306"
+
+    pma:
+        image: phpmyadmin/phpmyadmin
+        container_name: hentaigames_pma
+        restart: unless-stopped
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        ports:
+            - "8081:80"
+        networks:
+            - hentaigames_network
+        depends_on:
+            - db
+
+networks:
+    hentaigames_network:
+        driver: bridge
+
+volumes:
+    dbdata:
+        driver: local
