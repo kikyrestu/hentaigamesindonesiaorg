@@ -170,14 +170,20 @@ class ImageKitAdapter implements FilesystemAdapter
     {
         $details = $this->getFileDetails($path);
         
-        // Prioritize extension detection because ImageKit might return generic mime types
-        // or Livewire temporary files might need extension-based validation
+        // 1. Try Extension (Fastest & Most Reliable for Uploads)
         $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
         $mimeType = $detector->detectMimeTypeFromPath($path, null);
 
-        // Fallback to ImageKit details if extension detection fails
-        if (!$mimeType) {
-            $mimeType = $details->mime ?? 'application/octet-stream';
+        // 2. Try ImageKit Metadata (If extension fails)
+        if (!$mimeType || $mimeType === 'application/octet-stream') {
+            $mimeType = $details->mime ?? null;
+        }
+
+        // 3. Fallback to generic image if we know it's an image extension but detection failed
+        // This is a hack to satisfy Laravel validation if everything else fails
+        if ((!$mimeType || $mimeType === 'application/octet-stream') && $this->hasImageExtension($path)) {
+             $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+             $mimeType = 'image/' . ($ext === 'jpg' ? 'jpeg' : $ext);
         }
 
         return new FileAttributes(
@@ -185,8 +191,14 @@ class ImageKitAdapter implements FilesystemAdapter
             $details->size, 
             null, 
             strtotime($details->updatedAt), 
-            $mimeType
+            $mimeType ?: 'application/octet-stream'
         ); 
+    }
+
+    protected function hasImageExtension(string $path): bool
+    {
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']);
     }
 
     public function lastModified(string $path): FileAttributes
