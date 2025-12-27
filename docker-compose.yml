@@ -17,7 +17,7 @@ services:
         container_name: hentaigames_nginx
         restart: unless-stopped
         ports:
-            - "80:80"
+            - "8001:80"
         volumes:
             - ./:/var/www
             - ./docker/nginx/conf.d:/etc/nginx/conf.d
