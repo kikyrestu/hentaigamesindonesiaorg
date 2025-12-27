@@ -170,11 +170,14 @@ class ImageKitAdapter implements FilesystemAdapter
     {
         $details = $this->getFileDetails($path);
         
-        $mimeType = $details->mime ?? null;
+        // Prioritize extension detection because ImageKit might return generic mime types
+        // or Livewire temporary files might need extension-based validation
+        $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
+        $mimeType = $detector->detectMimeTypeFromPath($path, null);
 
+        // Fallback to ImageKit details if extension detection fails
         if (!$mimeType) {
-            $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
-            $mimeType = $detector->detectMimeTypeFromPath($path, null);
+            $mimeType = $details->mime ?? 'application/octet-stream';
         }
 
         return new FileAttributes(
@@ -182,7 +185,7 @@ class ImageKitAdapter implements FilesystemAdapter
             $details->size, 
             null, 
             strtotime($details->updatedAt), 
-            $mimeType ?: 'application/octet-stream'
+            $mimeType
         ); 
     }
 
