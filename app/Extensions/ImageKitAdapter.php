@@ -344,12 +344,28 @@ class ImageKitAdapter implements FilesystemAdapter
         return $response->result;
     }
     
-    protected function getUrl(string $path): ?string
+    public function getUrl(string $path): ?string
     {
+        // Check Cache First
+        $cacheKey = 'imagekit_file_' . md5($path);
+        $cachedDetails = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        
+        if ($cachedDetails && isset($cachedDetails->url)) {
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Cache HIT for getUrl: $path");
+            return $cachedDetails->url;
+        }
+
         $fileId = $this->getFileId($path);
         if (!$fileId) return null;
         
         $response = $this->client->getFileDetails($fileId);
-        return $response->result->url ?? null;
+        
+        if ($response->result) {
+             // Cache it
+             \Illuminate\Support\Facades\Cache::put($cacheKey, $response->result, 600);
+             return $response->result->url ?? null;
+        }
+
+        return null;
     }
 }
