@@ -168,29 +168,42 @@ class ImageKitAdapter implements FilesystemAdapter
 
     public function mimeType(string $path): FileAttributes
     {
-        $details = $this->getFileDetails($path);
+        \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Checking mimeType for path: " . $path);
+
+        try {
+            $details = $this->getFileDetails($path);
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Details from ImageKit: " . json_encode($details));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("DEBUG_IMAGEKIT: Failed to get details: " . $e->getMessage());
+            // If we can't get details, we can't do much, but let's try extension fallback anyway if possible
+            $details = (object)['size' => 0, 'updatedAt' => date('Y-m-d H:i:s')];
+        }
         
         // 1. Try Extension (Fastest & Most Reliable for Uploads)
         $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
         $mimeType = $detector->detectMimeTypeFromPath($path, null);
+        \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Extension detector result: " . ($mimeType ?? 'null'));
 
         // 2. Try ImageKit Metadata (If extension fails)
         if (!$mimeType || $mimeType === 'application/octet-stream') {
             $mimeType = $details->mime ?? null;
+            \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: ImageKit metadata result: " . ($mimeType ?? 'null'));
         }
 
         // 3. Fallback to generic image if we know it's an image extension but detection failed
-        // This is a hack to satisfy Laravel validation if everything else fails
         if ((!$mimeType || $mimeType === 'application/octet-stream') && $this->hasImageExtension($path)) {
              $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
              $mimeType = 'image/' . ($ext === 'jpg' ? 'jpeg' : $ext);
+             \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Hard fallback result: " . $mimeType);
         }
+
+        \Illuminate\Support\Facades\Log::info("DEBUG_IMAGEKIT: Final MimeType returned: " . ($mimeType ?: 'application/octet-stream'));
 
         return new FileAttributes(
             $path, 
-            $details->size, 
+            $details->size ?? 0, 
             null, 
-            strtotime($details->updatedAt), 
+            strtotime($details->updatedAt ?? 'now'), 
             $mimeType ?: 'application/octet-stream'
         ); 
     }
