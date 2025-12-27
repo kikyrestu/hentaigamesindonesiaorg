@@ -169,9 +169,17 @@ class ImageKitAdapter implements FilesystemAdapter
     public function mimeType(string $path): FileAttributes
     {
         $details = $this->getFileDetails($path);
-        // ImageKit doesn't always return mime type in details, but let's check
-        // Usually it's not there, but we can guess or it might be in metadata
-        return new FileAttributes($path, null, null, null, null); 
+        
+        $detector = new \League\MimeTypeDetection\ExtensionMimeTypeDetector();
+        $mimeType = $detector->detectMimeTypeFromPath($path, null);
+
+        return new FileAttributes(
+            $path, 
+            $details->size, 
+            null, 
+            strtotime($details->updatedAt), 
+            $mimeType ?: 'application/octet-stream'
+        ); 
     }
 
     public function lastModified(string $path): FileAttributes
