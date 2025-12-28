@@ -25,7 +25,7 @@ array (
     'name' => 'Admin',
     'email' => 'admin@kimochi.info',
     'email_verified_at' => NULL,
-    'password' => '$2y$12$7HDRVRBYNWpVN0RMQgBh3.pF4Vl8wrXVJmgnP82Xjns7p.J0TiGoy',
+    'password' => \Illuminate\Support\Facades\Hash::make('password'),
     'remember_token' => NULL,
     'created_at' => '2025-12-24 14:07:21',
     'updated_at' => '2025-12-24 14:07:21',
