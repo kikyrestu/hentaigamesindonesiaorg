@@ -29,6 +29,40 @@ services:
         depends_on:
             - app
 
+    db:
+        image: mysql:8.0
+        container_name: hentaigames_db
+        restart: unless-stopped
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE:-hentaigames}
+            MYSQL_USER: ${DB_USERNAME:-sail}
+            MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - hentaigames_network
+
+    pma:
+        image: phpmyadmin/phpmyadmin
+        container_name: hentaigames_pma
+        restart: unless-stopped
+        ports:
+            - "8081:80"
+        environment:
+            PMA_HOST: hentaigames_db
+            PMA_USER: ${DB_USERNAME:-sail}
+            PMA_PASSWORD: ${DB_PASSWORD:-password}
+        networks:
+            - hentaigames_network
+        depends_on:
+            - db
+
 networks:
     hentaigames_network:
         driver: bridge
+
+volumes:
+    db_data:
